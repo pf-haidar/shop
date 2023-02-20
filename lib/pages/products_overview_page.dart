@@ -15,16 +15,18 @@ class ProductsOverviewPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Minha Loja'),
       ),
-      body: GridView.builder(
+      body: Padding(
         padding: const EdgeInsets.all(10),
-        itemCount: loadedProducts.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 3 / 2,
-          crossAxisSpacing: 10,
-          mainAxisExtent: 10,
+        child: GridView.builder(
+          itemCount: loadedProducts.length,
+          itemBuilder: (ctx, i) => ProductItem(product: loadedProducts[i]),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 3 / 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
         ),
-        itemBuilder: (ctx, i) => ProductItem(product: loadedProducts[i])
       ),
     );
   }
