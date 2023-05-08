@@ -36,28 +36,15 @@ class CartPage extends StatelessWidget {
                     label: Text(
                       'R\$${cart.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color:
-                            Theme.of(context).primaryTextTheme.titleLarge?.color,
+                        color: Theme.of(context)
+                            .primaryTextTheme
+                            .titleLarge
+                            ?.color,
                       ),
                     ),
                   ),
                   const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      Provider.of<OrderList>(
-                        context,
-                        listen: false,
-                      ).addOrder(cart);
-
-                      cart.clear();
-                    },
-                    style: TextButton.styleFrom(
-                      textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    child: const Text('COMPRAR'),
-                  )
+                  CartButton(cart: cart)
                 ],
               ),
             ),
@@ -71,5 +58,47 @@ class CartPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class CartButton extends StatefulWidget {
+  const CartButton({
+    super.key,
+    required this.cart,
+  });
+
+  final Cart cart;
+
+  @override
+  State<CartButton> createState() => _CartButtonState();
+}
+
+class _CartButtonState extends State<CartButton> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return isLoading
+        ? const CircularProgressIndicator()
+        : TextButton(
+            onPressed: widget.cart.itemsCount == 0
+                ? null
+                : () async {
+                    setState(() => isLoading = true);
+                    await Provider.of<OrderList>(
+                      context,
+                      listen: false,
+                    ).addOrder(widget.cart);
+
+                    widget.cart.clear();
+                    setState(() => isLoading = false);
+                  },
+            style: TextButton.styleFrom(
+              textStyle: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            child: const Text('COMPRAR'),
+          );
   }
 }
