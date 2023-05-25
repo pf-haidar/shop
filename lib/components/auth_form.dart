@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/exceptions/auth_exception.dart';
+import 'package:shop/models/auth.dart';
 
 enum AuthMode { signup, login }
 
@@ -34,17 +37,46 @@ class _AuthFormState extends State<AuthForm> {
     });
   }
 
-  void _submit() {
+  void _showErrorDialog(String msg) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ocorreu um Erro'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fechar'),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
     final isValid = formKey.currentState?.validate() ?? false;
     if (!isValid) {
       return;
     }
     setState(() => isLoading = true);
     formKey.currentState?.save();
-    if(_isLogin()) {
-
-    } else {
-      
+    Auth auth = Provider.of(context, listen: false);
+    try {
+      if (_isLogin()) {
+        await auth.login(
+          authData['email']!,
+          authData['password']!,
+        );
+      } else {
+        await auth.signup(
+          authData['email']!,
+          authData['password']!,
+        );
+      }
+    } on AuthException catch (error) {
+      _showErrorDialog(error.toString());
+    } catch (error) {
+      _showErrorDialog('Ocorreu um erro inesperado!');
     }
     setState(() => isLoading = false);
   }
@@ -101,7 +133,7 @@ class _AuthFormState extends State<AuthForm> {
                       ? null
                       : (password) {
                           final confirmPassword = password ?? '';
-                          if (confirmPassword == passwordController.text) {
+                          if (confirmPassword != passwordController.text) {
                             return 'Senhas informadas não conferem';
                           }
                           return null;
