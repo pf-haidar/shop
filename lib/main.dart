@@ -15,6 +15,7 @@ import 'package:shop/pages/products_overview_page.dart';
 import 'package:shop/pages/products_page.dart';
 import 'package:shop/providers/counter.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'package:shop/utils/custom_route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,12 +58,17 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            primary: Colors.purple,
-            secondary: Colors.deepOrange,
-          ),
-          fontFamily: 'Lato',
-        ),
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              primary: Colors.purple,
+              secondary: Colors.deepOrange,
+            ),
+            fontFamily: 'Lato',
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CustomPageTransitionsBuilder(),
+                TargetPlatform.iOS: CustomPageTransitionsBuilder(),
+              },
+            ),),
         // home: const ProductsOverviewPage(),
         debugShowCheckedModeBanner: false,
         routes: {
